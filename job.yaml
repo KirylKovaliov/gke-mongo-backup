@@ -1,0 +1,28 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mongo-backup
+spec:
+  schedule: "*/20 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: google-cloud-key
+            secret:
+              secretName: gcs-key
+          containers:
+          - name: lgt-mongo-backup
+            image: gcr.io/lead-tool-generator/lgt-mongo-backup-service:latest
+            volumeMounts:
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
+            env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/secrets/google/key.json
+            - name:  MONGO_URI
+              value: mongodb://10.59.242.190:27017/
+            - name:  BUCKET_NAME
+              value: lgt_mongo_backups
+          restartPolicy: OnFailure
