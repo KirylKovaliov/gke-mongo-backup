@@ -16,8 +16,11 @@ if [ -z "$BUCKET_NAME" ]; then
     exit 1
 fi
 
+# Activate service account for gsutil
+gcloud auth activate-service-account --key-file=/var/cred.json
+
 # Path in which to create the backup (will get cleaned later)
-BACKUP_PATH="/mnt/data/dump/"
+BACKUP_PATH="/var/mongobackup/dump/"
 
 # START
 echo "$(get_log_date) Mongo backup started"
